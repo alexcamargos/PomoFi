@@ -1,15 +1,115 @@
 <div class="container">
-  <div class="outerRing">
+  <div class="pomodoro-controls">
+    <div class="pomodoro-controls-durations">
+      <h2>Duração</h2>
+      <div class="pomodoro-controls-durations-buttons">
+        <button (click)="setTimer(25)">25 min</button>
+        <button (click)="setTimer(40)">40 min</button>
+        <button (click)="setTimer(50)">50 min</button>
+      </div>
+    </div>
+
+    <div class="pomodoro-controls-breaks">
+      <h2>Intervalos</h2>
+      <div class="pomodoro-controls-breaks-buttons">
+        <button (click)="setTimer(5)">Curta</button>
+        <button (click)="setTimer(10)">Longa</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="outer-ring" [ngClass]="{ 'outer-ring-countdown': isAlive }">
     <div class="timer">
       <div id="time">
-        <span id="minutes">00</span>
-        <span id="colon">:</span>
-        <span id="seconds">10</span>
+        <div class="timer-minutes-display">
+          <div class="time-control-buttons" *ngIf="contentEditable">
+            <span
+              class="material-symbols-rounded"
+              (click)="decrementValue('minutes')"
+            >
+              do_not_disturb_on
+            </span>
+            <span
+              class="material-symbols-rounded"
+              (click)="incrementValue('minutes')"
+            >
+              add_circle
+            </span>
+          </div>
+
+          <span
+            id="minutes"
+            #inputMinutes
+            [attr.contenteditable]="contentEditable"
+            [ngClass]="{ 'content-editable': contentEditable }"
+          >
+            {{ minutes | number: "2.0" }}
+          </span>
+        </div>
+
+        <span id="colon" class="time-colon-display">:</span>
+
+        <div class="timer-seconds-display">
+          <div class="time-control-buttons" *ngIf="contentEditable">
+            <span
+              class="material-symbols-rounded"
+              (click)="decrementValue('seconds')"
+            >
+              do_not_disturb_on
+            </span>
+            <span
+              class="material-symbols-rounded"
+              (click)="incrementValue('seconds')"
+            >
+              add_circle
+            </span>
+          </div>
+
+          <span
+            id="seconds"
+            [attr.contenteditable]="contentEditable"
+            [ngClass]="{ 'content-editable': contentEditable }"
+          >
+            {{ seconds | number: "2.0" }}
+          </span>
+        </div>
       </div>
-      <div id="start">START</div>
+
+      <div class="command-container">
+        <!-- Start/Pause Controls -->
+        <div *ngIf="isAlive; then thenBlock; else elseBlock"></div>
+        <ng-template #thenBlock>
+          <div id="timer-command" (click)="pauseTimer()">
+            <span class="material-symbols-rounded"> pause </span>
+          </div>
+        </ng-template>
+        <ng-template #elseBlock>
+          <div id="timer-command" (click)="startTimer()">
+            <span class="material-symbols-rounded"> play_arrow </span>
+          </div>
+        </ng-template>
+
+        <div *ngIf="isAlive" id="timer-command" (click)="resetTimer()">
+          <span class="material-symbols-rounded"> replay </span>
+        </div>
+      </div>
+
       <span id="setting">
-        <span class="material-symbols-outlined">settings</span>
+        <span
+          class="material-symbols-rounded"
+          (click)="toggleContentEditable()"
+        >
+          settings
+        </span>
       </span>
     </div>
   </div>
 </div>
+
+<audio #countdownAudio controls class="display-nome">
+  <source type="audio/wav" src="../../assets/sound/countdown.wav" />
+</audio>
+
+<audio #pomodoroCompleteAudio controls class="display-nome">
+  <source type="audio/wav" src="../../assets/sound/complete.mp3" />
+</audio>
