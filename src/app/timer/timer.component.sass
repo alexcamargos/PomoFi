@@ -1,15 +1,30 @@
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0")
+// -------------------------------------------------------------------------------------------------
+// Name: timer.component.sass
+// Version: 0.0.1
+//
+// Summary: PomoFi - Timer Pomodoro® com Música LoFi
+//
+// Author: Alexsander Lopes Camargos
+// Author-email: alcamargos@vivaldi.net
+//
+// License: MIT
+// -------------------------------------------------------------------------------------------------
+
+// Material Design Icons
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0")
 
 // Set variables
 $bg: #2b2a30
 $normal-ring: #17171a
 $red-ring: #9d0000
+$blue-ring: #00009d
 $green-ring: #00aa51
 $font-color: #ffffff
 $shadow-25: rgba(0, 0, 0, 0.25)
 $shadow-45: rgba(0, 0, 0, 0.45)
 $timer-bg: radial-gradient(71.4% 71.4% at 51.7% 28.6%,#3a393f 0%,$normal-ring 100%)
 
+// Minimal reset
 *,
 *::before,
 *::after
@@ -17,23 +32,62 @@ $timer-bg: radial-gradient(71.4% 71.4% at 51.7% 28.6%,#3a393f 0%,$normal-ring 10
   padding: 0
   box-sizing: border-box
 
+.display-nome
+  display: none
+
+// Components Styles
 body
   background: $bg
   min-height: 100vh
   overflow: hidden
 
 .container
-  height: 600px
-  width: 600px
-  background-color: transparent
-  position: absolute
-  transform: translate(-50%, -50%)
-  top: 50%
-  left: 50%
   display: grid
   place-items: center
+  padding: 1rem
+  background-color: transparent
 
-  .outerRing
+  .pomodoro-controls
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 1rem
+    margin-bottom: 1rem
+    width: 100%
+
+    &-durations,
+    &-breaks
+      display: flex
+      flex-direction: column
+
+      &-buttons
+        display: flex
+        justify-content: space-evenly
+        gap: 0.5rem
+
+      h2
+        font-size: 1rem
+        margin-bottom: 0.5rem
+
+      button
+        outline: 0px
+        margin: 0px
+        padding: 0.125rem 0.5rem
+        cursor: pointer
+        user-select: none
+        border: 1px currentcolor
+        font-weight: 500
+        font-size: 0.875rem
+        line-height: 1.75
+        letter-spacing: 0.02857em
+        text-transform: uppercase
+        min-width: 64px
+        border-radius: .5rem
+        color: inherit
+        background-color: rgba(255, 255, 255, 0.2)
+        transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms
+
+  .outer-ring
     display: grid
     place-items: center
     width: 415px
@@ -41,6 +95,13 @@ body
     border-radius: 50%
     box-shadow: -5px 14px 44px #000, 5px -16px 50px rgba(255, 255, 255, 0.15)
     background: $normal-ring
+    transition: all 0.5s ease-in-out
+
+    &-countdown
+      background-color: $green-ring
+
+    &-pause
+      background-color: $blue-ring
 
     .timer
       display: flex
@@ -55,33 +116,54 @@ body
       padding: 8rem
 
       #time
+        display: inline-flex
+        justify-content: center
+        align-items: flex-end
         width: 300px
         text-align: center
         margin: 3rem 0 0 0
 
-        span
-          display: inline
+        .timer-minutes-display,
+        .timer-seconds-display,
+        .time-colon-display
           color: $font-color
           font-size: 7rem
           letter-spacing: 0.1em
-          text-shadow: 0px 4px 4px $shadow-25
 
-    #start
-      color: $font-color
-      cursor: pointer
-      font-weight: bold
-      font-size: 1rem
-      line-height: 1.25rem
-      text-align: center
-      letter-spacing: 0.6em
-      margin: 1rem 0
-      text-shadow: 0px 4px 4px $shadow-25
+          span
+            display: inline
+            text-shadow: 0px 4px 4px $shadow-25
+
+            &.content-editable
+              border-bottom: 1px dashed #ffffff50
+
+        .time-control-buttons
+          display: grid
+          grid-template-columns: 1fr 1fr
+          font-size: 1rem
+          line-height: 1.25rem
+          text-align: center
+          cursor: pointer
+
+    .command-container
+      display: inline-flex
+      gap: 1rem
+      align-items: center
+      justify-content: space-around
+
+      #timer-command
+        color: $font-color
+        cursor: pointer
+        font-weight: bold
+        font-size: 1rem
+        line-height: 1.25rem
+        text-align: center
+        letter-spacing: 0.6em
+        margin: 1rem 0
+        text-shadow: 0px 4px 4px $shadow-25
 
     #setting
       cursor: pointer
       margin-top: 1rem
       width: 2rem
       height: 2rem
-
-    .material-symbols-outlined
-      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48
