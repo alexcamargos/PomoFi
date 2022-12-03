@@ -8,6 +8,8 @@ import { Component, OnInit } from '@angular/core';
 export class YoutubePlayerComponent implements OnInit {
   apiLoaded: boolean = false;
 
+  isRestricted = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
   ngOnInit() {
     if (!this.apiLoaded) {
       const tag = document.createElement('script');
