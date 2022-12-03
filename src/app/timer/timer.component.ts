@@ -27,9 +27,11 @@ export class TimerComponent implements OnInit {
   @Input('inputMinutes') minutes: number;
   @Input() seconds: number;
 
-  @ViewChild('countdownAudio') countdownAudio: ElementRef | undefined;
+  @ViewChild('countdownAudio') countdownAudio:
+    | ElementRef<HTMLAudioElement>
+    | undefined;
   @ViewChild('pomodoroCompleteAudio') pomodoroCompleteAudio:
-    | ElementRef
+    | ElementRef<HTMLAudioElement>
     | undefined;
 
   constructor() {
