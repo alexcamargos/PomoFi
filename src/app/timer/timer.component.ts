@@ -106,9 +106,13 @@ export class TimerComponent implements OnInit {
   }
 
   setTimer(timer: number) {
-    this.seconds = 0;
-    this.minutes = timer;
-    this.totalTime = this.__totalTimeCalculation();
+    console.info('Set timer!');
+
+    if (!this.isAlive) {
+      this.seconds = 0;
+      this.minutes = timer;
+      this.totalTime = this.__totalTimeCalculation();
+    }
   }
 
   startTimer() {
