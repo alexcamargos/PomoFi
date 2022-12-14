@@ -12,6 +12,10 @@
 
 import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 
+// Default values for timer.
+const DEFAULT_MINUTES = 25; // Default minutes value.
+const DEFAULT_SECONDS = 0; // Default seconds value.
+
 @Component({
   selector: 'app-timer',
   templateUrl: './timer.component.html',
@@ -36,8 +40,10 @@ export class TimerComponent implements OnInit {
 
   constructor() {
     console.info('TimerComponent constructor!');
-    this.minutes = 25; // Default minutes value.
-    this.seconds = 0; // Default seconds value.
+
+    // Defaults timer properties.
+    this.minutes = DEFAULT_MINUTES;
+    this.seconds = DEFAULT_SECONDS;
 
     // Defaults timer control properties.
     this.isAlive = false; // Timer is not alive.
@@ -111,7 +117,7 @@ export class TimerComponent implements OnInit {
     console.info('Set timer!');
 
     if (!this.isAlive) {
-      this.seconds = 0;
+      this.seconds = DEFAULT_SECONDS;
       this.minutes = timer;
       this.totalTime = this.__totalTimeCalculation();
     }
@@ -151,8 +157,8 @@ export class TimerComponent implements OnInit {
       clearInterval(this.timer);
 
       this.isAlive = false;
-      this.minutes = 25;
-      this.seconds = 0;
+      this.minutes = DEFAULT_MINUTES;
+      this.seconds = DEFAULT_SECONDS;
       this.totalTime = this.__totalTimeCalculation();
     }
   }
