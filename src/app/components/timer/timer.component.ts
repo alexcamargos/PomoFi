@@ -10,25 +10,32 @@
 // License: MIT
 // -------------------------------------------------------------------------------------------------
 
-import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 
 // Default values for timer.
-const DEFAULT_MINUTES = 25; // Default minutes value.
-const DEFAULT_SECONDS = 0; // Default seconds value.
+const DEFAULT_MINUTES:number = 25; // Default minutes value.
+const DEFAULT_SECONDS:number = 0; // Default seconds value.
 
 @Component({
   selector: 'app-timer',
   templateUrl: './timer.component.html',
   styleUrls: ['./timer.component.sass'],
 })
-export class TimerComponent implements OnInit {
+export class TimerComponent implements OnInit, OnDestroy {
   isAlive: boolean;
   contentEditable: boolean;
 
   totalTime: any;
   timer: any;
 
-  @Input('inputMinutes') minutes: number;
+  @Input() minutes: number;
   @Input() seconds: number;
 
   @ViewChild('countdownAudio') countdownAudio:
@@ -57,6 +64,12 @@ export class TimerComponent implements OnInit {
 
     this.countdownAudio?.nativeElement.load();
     this.pomodoroCompleteAudio?.nativeElement.load();
+  }
+
+  ngOnDestroy() {
+    console.info('TimerComponent destroyed!');
+
+    clearInterval(this.timer);
   }
 
   private __totalTimeCalculation(): number {
