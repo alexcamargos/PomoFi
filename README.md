@@ -1,4 +1,4 @@
-# Pomofi
+# Pomofi [![Netlify Status](https://api.netlify.com/api/v1/badges/fc9f3b29-0f4a-4df7-960c-51c867de5684/deploy-status)](https://app.netlify.com/sites/pomofi/deploys)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.1.
 
