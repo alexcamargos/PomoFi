@@ -144,7 +144,8 @@ export class TimerComponent implements OnInit, OnDestroy {
   startTimer() {
     if (this.totalTime > 0) {
       console.info('Timer started!');
-      this.timerStart.emit();
+      console.info('Timer started!');
+      // this.timerStart.emit(); // Removed immediate emit
 
       if (this.contentEditable) {
         this.toggleContentEditable();
@@ -152,13 +153,15 @@ export class TimerComponent implements OnInit, OnDestroy {
 
       this.isAlive = true;
 
-      this.countdownAudio?.nativeElement.play();
-
-      setTimeout(() => {
-        this.timer = setInterval(() => {
-          this.__doCountdown();
-        }, 1000); // Each seconds.
-      }, 4000); // Pause the application execution for 4 seconds.
+      if (this.countdownAudio?.nativeElement) {
+        this.countdownAudio.nativeElement.onended = () => {
+          this.timerStart.emit();
+          this.timer = setInterval(() => {
+            this.__doCountdown();
+          }, 1000); // Each seconds.
+        };
+        this.countdownAudio.nativeElement.play();
+      }
     }
   }
 
@@ -173,6 +176,8 @@ export class TimerComponent implements OnInit, OnDestroy {
   resetTimer() {
     if (this.isAlive) {
       console.info('Timer stopped!');
+
+      this.timerPause.emit();
 
       clearInterval(this.timer);
 
