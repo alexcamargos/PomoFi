@@ -17,11 +17,13 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 
 // Default values for timer.
-const DEFAULT_MINUTES:number = 25; // Default minutes value.
-const DEFAULT_SECONDS:number = 0; // Default seconds value.
+const DEFAULT_MINUTES: number = 25; // Default minutes value.
+const DEFAULT_SECONDS: number = 0; // Default seconds value.
 
 @Component({
   selector: 'app-timer',
@@ -44,6 +46,9 @@ export class TimerComponent implements OnInit, OnDestroy {
   @ViewChild('pomodoroCompleteAudio') pomodoroCompleteAudio:
     | ElementRef<HTMLAudioElement>
     | undefined;
+
+  @Output() timerStart = new EventEmitter<void>();
+  @Output() timerPause = new EventEmitter<void>();
 
   constructor() {
     console.info('TimerComponent constructor!');
@@ -139,6 +144,7 @@ export class TimerComponent implements OnInit, OnDestroy {
   startTimer() {
     if (this.totalTime > 0) {
       console.info('Timer started!');
+      this.timerStart.emit();
 
       if (this.contentEditable) {
         this.toggleContentEditable();
@@ -158,6 +164,7 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   pauseTimer() {
     console.info('Timer paused!');
+    this.timerPause.emit();
 
     clearInterval(this.timer);
     this.isAlive = false;
