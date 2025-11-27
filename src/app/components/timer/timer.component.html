@@ -33,7 +33,7 @@
 
           <span id="minutes" #inputMinutes [attr.contenteditable]="contentEditable"
             [ngClass]="{ 'content-editable': contentEditable }" (keydown)="validateInput($event, 'minutes')"
-            (blur)="saveValues()">
+            (blur)="saveValues()" (focus)="handleFocus($event)" (click)="handleFocus($event)">
             {{ minutes | number: "2.0" }}
           </span>
         </div>
@@ -52,7 +52,7 @@
 
           <span id="seconds" #inputSeconds [attr.contenteditable]="contentEditable"
             [ngClass]="{ 'content-editable': contentEditable }" (keydown)="validateInput($event, 'seconds')"
-            (blur)="saveValues()">
+            (blur)="saveValues()" (focus)="handleFocus($event)" (click)="handleFocus($event)">
             {{ seconds | number: "2.0" }}
           </span>
         </div>

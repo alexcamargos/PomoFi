@@ -194,10 +194,28 @@ export class TimerComponent implements OnInit, OnDestroy {
 
     const target = event.target as HTMLElement;
     const maxLength = type === 'minutes' ? 3 : 2;
+    const selection = window.getSelection();
+
+    if (selection && selection.toString().length > 0) {
+      return;
+    }
 
     if (target.innerText.length >= maxLength) {
       event.preventDefault();
     }
+  }
+
+  handleFocus(event: FocusEvent) {
+    const target = event.target as HTMLElement;
+
+    setTimeout(() => {
+      const range = document.createRange();
+      const selection = window.getSelection();
+
+      range.selectNodeContents(target);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }, 0);
   }
 
   setTimer(timer: number) {
@@ -213,8 +231,6 @@ export class TimerComponent implements OnInit, OnDestroy {
   startTimer() {
     if (this.totalTime > 0) {
       console.info('Timer started!');
-      console.info('Timer started!');
-      // this.timerStart.emit(); // Removed immediate emit
 
       if (this.contentEditable) {
         this.toggleContentEditable();
