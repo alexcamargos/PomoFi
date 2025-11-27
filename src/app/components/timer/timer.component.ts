@@ -89,6 +89,18 @@ export class TimerComponent implements OnInit, OnDestroy {
       this.totalTime--;
       this.minutes = Math.floor(this.totalTime / 60);
       this.seconds = this.totalTime % 60;
+
+      if (this.inputMinutes) {
+        this.inputMinutes.nativeElement.innerText = this.minutes
+          .toString()
+          .padStart(2, '0');
+      }
+
+      if (this.inputSeconds) {
+        this.inputSeconds.nativeElement.innerText = this.seconds
+          .toString()
+          .padStart(2, '0');
+      }
     } else {
       this.pomodoroCompleteAudio?.nativeElement.play();
       this.resetTimer();
@@ -133,23 +145,59 @@ export class TimerComponent implements OnInit, OnDestroy {
     this.contentEditable = !this.contentEditable;
 
     if (!this.contentEditable) {
-      if (this.inputMinutes && this.inputSeconds) {
-        const minutes = parseInt(this.inputMinutes.nativeElement.innerText, 10);
-        const seconds = parseInt(this.inputSeconds.nativeElement.innerText, 10);
-
-        if (!isNaN(minutes) && minutes >= 0 && minutes <= 59) {
-          this.minutes = minutes;
-        }
-
-        if (!isNaN(seconds) && seconds >= 0 && seconds <= 59) {
-          this.seconds = seconds;
-        }
-
-        this.totalTime = this.__totalTimeCalculation();
-      }
+      this.saveValues();
     }
 
     this.pauseTimer();
+  }
+
+  saveValues() {
+    if (this.inputMinutes && this.inputSeconds) {
+      const minutes = parseInt(
+        this.inputMinutes.nativeElement.innerText.trim(),
+        10
+      );
+      const seconds = parseInt(
+        this.inputSeconds.nativeElement.innerText.trim(),
+        10
+      );
+
+      if (!isNaN(minutes) && minutes >= 0) {
+        this.minutes = minutes;
+      }
+
+      if (!isNaN(seconds) && seconds >= 0) {
+        this.seconds = seconds > 59 ? 59 : seconds;
+      }
+
+      this.totalTime = this.__totalTimeCalculation();
+    }
+  }
+
+  validateInput(event: KeyboardEvent, type: string) {
+    const allowedKeys = [
+      'Backspace',
+      'ArrowLeft',
+      'ArrowRight',
+      'Tab',
+      'Delete',
+    ];
+
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+
+    if (!/^[0-9]$/.test(event.key)) {
+      event.preventDefault();
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+    const maxLength = type === 'minutes' ? 3 : 2;
+
+    if (target.innerText.length >= maxLength) {
+      event.preventDefault();
+    }
   }
 
   setTimer(timer: number) {
