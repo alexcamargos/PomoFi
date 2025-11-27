@@ -23,26 +23,16 @@
       <div id="time">
         <div class="timer-minutes-display">
           <div class="time-control-buttons" *ngIf="contentEditable">
-            <span
-              class="material-symbols-rounded"
-              (click)="decrementValue('minutes')"
-            >
+            <span class="material-symbols-rounded" (click)="decrementValue('minutes')">
               do_not_disturb_on
             </span>
-            <span
-              class="material-symbols-rounded"
-              (click)="incrementValue('minutes')"
-            >
+            <span class="material-symbols-rounded" (click)="incrementValue('minutes')">
               add_circle
             </span>
           </div>
 
-          <span
-            id="minutes"
-            #inputMinutes
-            [attr.contenteditable]="contentEditable"
-            [ngClass]="{ 'content-editable': contentEditable }"
-          >
+          <span id="minutes" #inputMinutes [attr.contenteditable]="contentEditable"
+            [ngClass]="{ 'content-editable': contentEditable }">
             {{ minutes | number: "2.0" }}
           </span>
         </div>
@@ -51,25 +41,16 @@
 
         <div class="timer-seconds-display">
           <div class="time-control-buttons" *ngIf="contentEditable">
-            <span
-              class="material-symbols-rounded"
-              (click)="decrementValue('seconds')"
-            >
+            <span class="material-symbols-rounded" (click)="decrementValue('seconds')">
               do_not_disturb_on
             </span>
-            <span
-              class="material-symbols-rounded"
-              (click)="incrementValue('seconds')"
-            >
+            <span class="material-symbols-rounded" (click)="incrementValue('seconds')">
               add_circle
             </span>
           </div>
 
-          <span
-            id="seconds"
-            [attr.contenteditable]="contentEditable"
-            [ngClass]="{ 'content-editable': contentEditable }"
-          >
+          <span id="seconds" #inputSeconds [attr.contenteditable]="contentEditable"
+            [ngClass]="{ 'content-editable': contentEditable }">
             {{ seconds | number: "2.0" }}
           </span>
         </div>
@@ -95,10 +76,7 @@
       </div>
 
       <span id="setting">
-        <span
-          class="material-symbols-rounded"
-          (click)="toggleContentEditable()"
-        >
+        <span class="material-symbols-rounded" (click)="toggleContentEditable()">
           settings
         </span>
       </span>

@@ -47,6 +47,9 @@ export class TimerComponent implements OnInit, OnDestroy {
     | ElementRef<HTMLAudioElement>
     | undefined;
 
+  @ViewChild('inputMinutes') inputMinutes: ElementRef<HTMLSpanElement> | undefined;
+  @ViewChild('inputSeconds') inputSeconds: ElementRef<HTMLSpanElement> | undefined;
+
   @Output() timerStart = new EventEmitter<void>();
   @Output() timerPause = new EventEmitter<void>();
 
@@ -128,6 +131,24 @@ export class TimerComponent implements OnInit, OnDestroy {
     console.info('Toggle content editable!');
 
     this.contentEditable = !this.contentEditable;
+
+    if (!this.contentEditable) {
+      if (this.inputMinutes && this.inputSeconds) {
+        const minutes = parseInt(this.inputMinutes.nativeElement.innerText, 10);
+        const seconds = parseInt(this.inputSeconds.nativeElement.innerText, 10);
+
+        if (!isNaN(minutes) && minutes >= 0 && minutes <= 59) {
+          this.minutes = minutes;
+        }
+
+        if (!isNaN(seconds) && seconds >= 0 && seconds <= 59) {
+          this.seconds = seconds;
+        }
+
+        this.totalTime = this.__totalTimeCalculation();
+      }
+    }
+
     this.pauseTimer();
   }
 
