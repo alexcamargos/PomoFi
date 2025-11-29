@@ -66,8 +66,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     longBreak: 10
   };
 
-  categories: string[] = ['Studying', 'Coding', 'Working', 'Other'];
-  selectedCategory: string = 'Other';
+  pendingTasks: Task[] = [];
 
   private countdownAudio: HTMLAudioElement;
   private pomodoroCompleteAudio: HTMLAudioElement;
@@ -107,6 +106,11 @@ export class TimerComponent implements OnInit, OnDestroy {
 
     this.taskService.activeTask$.subscribe(task => {
       this.activeTask = task;
+      this.cdr.markForCheck();
+    });
+
+    this.taskService.tasks$.subscribe(tasks => {
+      this.pendingTasks = tasks.filter(t => t.status === 'pending');
       this.cdr.markForCheck();
     });
   }
@@ -427,10 +431,19 @@ export class TimerComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCategoryChange(event: Event) {
+  onTaskChange(event: Event) {
     const target = event.target as HTMLSelectElement;
-    this.selectedCategory = target.value;
-    console.info(`Category changed to: ${this.selectedCategory}`);
+    const taskId = target.value;
+
+    if (taskId === 'no-task') {
+      this.taskService.setActiveTask(null);
+    } else {
+      const task = this.pendingTasks.find(t => t.id === taskId);
+      if (task) {
+        this.taskService.setActiveTask(task);
+      }
+    }
+    console.info(`Task changed to: ${taskId}`);
     this.cdr.markForCheck();
   }
 }

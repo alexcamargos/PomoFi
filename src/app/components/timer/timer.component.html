@@ -82,11 +82,12 @@
   <!-- Footer -->
   <div class="card-footer">
     <div class="category-section">
-      <span class="label">CATEGORY</span>
+      <span class="label">TASK</span>
       <div class="category-selector">
-        <select (change)="onCategoryChange($event)">
-          <option *ngFor="let category of categories" [value]="category" [selected]="category === selectedCategory">
-            {{ category }}
+        <select (change)="onTaskChange($event)">
+          <option value="no-task" [selected]="!activeTask">No Task Linked</option>
+          <option *ngFor="let task of pendingTasks" [value]="task.id" [selected]="activeTask?.id === task.id">
+            {{ task.title }}
           </option>
         </select>
         <span class="material-symbols-rounded arrow-icon">expand_more</span>
