@@ -23,6 +23,8 @@ We engineered **PomoFi** using **Angular** (v15+), leveraging the latest archite
     - Created a **Draggable UI** using Angular CDK, allowing users to arrange their workspace.
     - Integrated a **Dock** for quick access to essential tools (Timer toggle, Mute, Fullscreen).
     - Implemented **Global Mute** functionality that synchronizes audio across the Timer and YouTube Player.
+    - Developed a comprehensive **Task Management System** with Local Storage persistence.
+    - Implemented **Task-Timer Linking**, allowing users to associate Pomodoro sessions with specific tasks.
 - **Features**:
     - **Custom Timer Presets**: 25, 40, 55 minutes for focus; 5, 10 minutes for breaks.
     - **Integrated Media**: Embedded YouTube Player streaming "Lofi Girl" for continuous background music.
@@ -33,12 +35,15 @@ The result is **PomoFi**: a polished, high-performance productivity tool.
 - **Enhanced Focus**: Users can easily enter "flow state" with one-click timer starts and instant background music.
 - **User Satisfaction**: The intuitive "Dock" and draggable components provide a personalized experience.
 - **Technical Excellence**: The application runs smoothly with minimal CPU footprint, thanks to the targeted performance optimizations.
+- **Better Tracking**: Users can now track exactly how much time they spend on each task with the new session history.
 
 ---
 
 ## Features
 
 - **Smart Timer**: Presets for Pomodoro (25/40/55m) and Breaks (5/10m).
+- **Task Tracking**: Create, edit, and manage tasks with ease.
+- **Session History**: View detailed history of Pomodoro sessions linked to each task.
 - **Lofi Radio**: Integrated YouTube player with Lofi beats.
 - **Global Mute**: One-click silence for all app audio.
 - **Fullscreen Mode**: Immersive focus experience.
