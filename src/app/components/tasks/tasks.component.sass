@@ -84,15 +84,29 @@
   border-radius: 12px
   transition: all 0.2s ease
 
+  &:hover
+    background: rgba(255, 255, 255, 0.1)
+    transform: translateY(-2px)
+
   &.completed
     opacity: 0.6
     .task-title
       text-decoration: line-through
       color: #8b8d96
 
-  &:hover
-    background: rgba(255, 255, 255, 0.1)
-    transform: translateY(-2px)
+  // Visual separator for the first completed task
+  &.separator-top
+    margin-top: 1rem
+    position: relative
+    
+    &::before
+      content: ''
+      position: absolute
+      top: -0.5rem
+      left: 0
+      right: 0
+      height: 1px
+      background: rgba(255, 255, 255, 0.1)
 
 .task-info
   flex: 1

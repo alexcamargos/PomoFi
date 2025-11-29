@@ -12,7 +12,8 @@
     </div>
 
     <div class="tasks-list">
-        <div *ngFor="let task of tasks" class="task-item" [class.completed]="task.status === 'completed'">
+        <div *ngFor="let task of tasks; let i = index" class="task-item" [class.completed]="task.status === 'completed'"
+            [class.separator-top]="task.status === 'completed' && (i === 0 || tasks[i-1].status !== 'completed')">
             <div class="task-info">
                 <div class="task-title">{{ task.title }}</div>
                 <div class="task-meta">

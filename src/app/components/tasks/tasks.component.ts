@@ -22,7 +22,10 @@ export class TasksComponent implements OnInit {
 
     ngOnInit(): void {
         this.taskService.tasks$.subscribe(tasks => {
-            this.tasks = tasks;
+            this.tasks = tasks.sort((a, b) => {
+                if (a.status === b.status) return 0;
+                return a.status === 'pending' ? -1 : 1;
+            });
         });
     }
 
