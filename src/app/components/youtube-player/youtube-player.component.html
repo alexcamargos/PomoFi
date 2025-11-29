@@ -1,4 +1,35 @@
-<div class="youtube-player-container">
-  <youtube-player videoId="jfKfPfyJRdk" suggestedQuality="highres" [width]="400" [height]="225"
-    (ready)="onReady($event)"></youtube-player>
+<div class="player-widget glass-panel" [class.minimized]="isMinimized" [class.maximized]="isMaximized">
+  <!-- Header -->
+  <div class="widget-header" cdkDragHandle>
+    <div class="title">
+      <span class="material-symbols-rounded">grid_view</span>
+      <span>LoFi Radio</span>
+    </div>
+
+    <div class="window-controls">
+      <!-- Minimize Button -->
+      <button class="control-btn small" (click)="toggleMinimize()" (mousedown)="$event.stopPropagation()"
+        (touchstart)="$event.stopPropagation()" title="Minimize">
+        <span class="material-symbols-rounded">{{ isMinimized ? 'expand_content' : 'remove' }}</span>
+      </button>
+
+      <!-- Maximize Button -->
+      <button class="control-btn small" (click)="toggleMaximize()" (mousedown)="$event.stopPropagation()"
+        (touchstart)="$event.stopPropagation()" title="Maximize">
+        <span class="material-symbols-rounded">{{ isMaximized ? 'close_fullscreen' : 'check_box_outline_blank'
+          }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Video Body -->
+  <div class="video-body" [class.hidden]="isMinimized">
+    <youtube-player [videoId]="'jfKfPfyJRdk'" (ready)="onReady($event)" [playerVars]="{
+        autoplay: 0,
+        controls: 1,
+        modestbranding: 1,
+        rel: 0,
+        showinfo: 0
+      }"></youtube-player>
+  </div>
 </div>
