@@ -8,6 +8,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class DockComponent implements OnInit {
     @Input() isTimerActive: boolean = true;
     @Input() isTimerRunning: boolean = false;
+    @Input() isTasksActive: boolean = false;
     @Input() isMuted: boolean = false;
     @Output() toggleTimer = new EventEmitter<void>();
     @Output() toggleMute = new EventEmitter<void>();
