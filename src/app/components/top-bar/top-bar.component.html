@@ -1,0 +1,24 @@
+<div class="top-bar-container">
+    <!-- Left Side: Music Player Trigger -->
+    <div class="music-trigger">
+        <button class="icon-btn" [class.active]="isPlayerActive" (click)="togglePlayer.emit()">
+            <span class="material-symbols-rounded">music_note</span>
+            <div class="status-dot" *ngIf="isPlayerActive"></div>
+        </button>
+    </div>
+
+    <!-- Right Side: System Icons -->
+    <div class="system-icons">
+        <button class="icon-btn" title="Tela Cheia" (click)="toggleFullscreen()">
+            <span class="material-symbols-rounded">open_in_full</span>
+        </button>
+
+        <button class="icon-btn" title="Ajuda" (click)="openHelp()">
+            <span class="material-symbols-rounded">help</span>
+        </button>
+
+        <button class="icon-btn" title="Sobre" (click)="openAbout()">
+            <span class="material-symbols-rounded">info</span>
+        </button>
+    </div>
+</div>
