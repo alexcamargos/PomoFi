@@ -47,7 +47,8 @@ export class TasksComponent implements OnInit {
                     pomodoros: this.newTaskPomodoros,
                     type: this.newTaskType,
                     category: this.newTaskCategory,
-                    status: 'pending'
+                    status: 'pending',
+                    createdAt: new Date()
                 };
                 this.taskService.addTask(newTask);
             }
@@ -70,7 +71,12 @@ export class TasksComponent implements OnInit {
     }
 
     toggleStatus(task: Task): void {
-        const updatedTask = { ...task, status: task.status === 'pending' ? 'completed' : 'pending' } as Task;
+        const newStatus = task.status === 'pending' ? 'completed' : 'pending';
+        const updatedTask = {
+            ...task,
+            status: newStatus,
+            completedAt: newStatus === 'completed' ? new Date() : undefined
+        } as Task;
         this.taskService.updateTask(updatedTask);
     }
 
