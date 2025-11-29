@@ -10,6 +10,14 @@
         </div>
     </div>
 
+    <button class="dock-item app-icon" (click)="onMuteClick()" title="Sounds">
+        <span class="material-symbols-rounded">{{ isMuted ? 'volume_off' : 'volume_up' }}</span>
+    </button>
+
+    <button class="dock-item app-icon" title="Gallery">
+        <span class="material-symbols-rounded">image</span>
+    </button>
+
     <div class="separator"></div>
 
     <!-- App Icons -->
@@ -19,14 +27,6 @@
 
     <button class="dock-item app-icon" [class.active]="isTasksActive" (click)="onTasksClick()" title="Tasks">
         <span class="material-symbols-rounded">check_circle</span>
-    </button>
-
-    <button class="dock-item app-icon" (click)="onMuteClick()" title="Sounds">
-        <span class="material-symbols-rounded">{{ isMuted ? 'volume_off' : 'volume_up' }}</span>
-    </button>
-
-    <button class="dock-item app-icon" title="Gallery">
-        <span class="material-symbols-rounded">image</span>
     </button>
 
     <div class="separator"></div>
