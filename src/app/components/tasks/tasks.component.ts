@@ -12,8 +12,9 @@ export class TasksComponent implements OnInit {
     tasks: Task[] = [];
     newTaskTitle: string = '';
     newTaskPomodoros: number = 1;
-    newTaskType: 'short' | 'long' | 'standard' = 'standard';
-    newTaskTag: string = '';
+    newTaskType: 'Pomodoro 25' | 'Pomodoro 40' | 'Pomodoro 55' = 'Pomodoro 25';
+    newTaskCategory: 'Studying' | 'Coding' | 'Working' | 'Other' = 'Other';
+    categories: string[] = ['Studying', 'Coding', 'Working', 'Other'];
 
     editingTask: Task | null = null;
 
@@ -33,7 +34,7 @@ export class TasksComponent implements OnInit {
                     title: this.newTaskTitle,
                     pomodoros: this.newTaskPomodoros,
                     type: this.newTaskType,
-                    tag: this.newTaskTag
+                    category: this.newTaskCategory
                 };
                 this.taskService.updateTask(updatedTask);
             } else {
@@ -42,7 +43,7 @@ export class TasksComponent implements OnInit {
                     title: this.newTaskTitle,
                     pomodoros: this.newTaskPomodoros,
                     type: this.newTaskType,
-                    tag: this.newTaskTag,
+                    category: this.newTaskCategory,
                     status: 'pending'
                 };
                 this.taskService.addTask(newTask);
@@ -57,7 +58,7 @@ export class TasksComponent implements OnInit {
             this.newTaskTitle = task.title;
             this.newTaskPomodoros = task.pomodoros;
             this.newTaskType = task.type;
-            this.newTaskTag = task.tag;
+            this.newTaskCategory = task.category;
         }
     }
 
@@ -78,7 +79,7 @@ export class TasksComponent implements OnInit {
         this.editingTask = null;
         this.newTaskTitle = '';
         this.newTaskPomodoros = 1;
-        this.newTaskType = 'standard';
-        this.newTaskTag = '';
+        this.newTaskType = 'Pomodoro 25';
+        this.newTaskCategory = 'Other';
     }
 }

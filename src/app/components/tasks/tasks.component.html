@@ -16,7 +16,7 @@
             <div class="task-info">
                 <div class="task-title">{{ task.title }}</div>
                 <div class="task-meta">
-                    <span class="tag" *ngIf="task.tag">{{ task.tag }}</span>
+                    <span class="category-badge" *ngIf="task.category">{{ task.category }}</span>
                     <span class="pomodoros">{{ task.pomodoros }} <span
                             class="material-symbols-rounded">timer</span></span>
                 </div>
@@ -43,14 +43,16 @@
         <div class="form-row">
             <input type="number" [(ngModel)]="newTaskPomodoros" min="1" class="pomodoro-input" title="Pomodoros">
             <select [(ngModel)]="newTaskType" class="type-select" title="Type">
-                <option value="standard">Standard</option>
-                <option value="short">Short</option>
-                <option value="long">Long</option>
+                <option value="Pomodoro 25">Pomodoro 25</option>
+                <option value="Pomodoro 40">Pomodoro 40</option>
+                <option value="Pomodoro 55">Pomodoro 55</option>
             </select>
         </div>
 
         <div class="form-row">
-            <input type="text" [(ngModel)]="newTaskTag" placeholder="Tag" class="tag-input">
+            <select [(ngModel)]="newTaskCategory" class="type-select" title="Category">
+                <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+            </select>
             <button (click)="saveTask()" class="add-btn" title="{{ editingTask ? 'Save Task' : 'Add Task' }}">
                 <span class="material-symbols-rounded">{{ editingTask ? 'save' : 'add' }}</span>
             </button>
