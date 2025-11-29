@@ -47,7 +47,13 @@ export class TaskService {
         const storedTasks = localStorage.getItem(this.STORAGE_KEY);
         if (storedTasks) {
             try {
-                this.tasksSubject.next(JSON.parse(storedTasks));
+                const tasks = JSON.parse(storedTasks);
+                const parsedTasks = tasks.map((t: any) => ({
+                    ...t,
+                    createdAt: t.createdAt ? new Date(t.createdAt) : new Date(),
+                    completedAt: t.completedAt ? new Date(t.completedAt) : undefined
+                }));
+                this.tasksSubject.next(parsedTasks);
             } catch (e) {
                 console.error('Error parsing tasks from local storage', e);
                 this.tasksSubject.next([]);
