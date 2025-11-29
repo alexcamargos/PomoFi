@@ -51,6 +51,14 @@ export class TimerComponent implements OnInit, OnDestroy {
   @Input() seconds: number;
   @Input() isMuted: boolean = false;
 
+  timerPresets = {
+    pomodoro25: 25,
+    pomodoro40: 40,
+    pomodoro55: 55,
+    shortBreak: 5,
+    longBreak: 10
+  };
+
   categories: string[] = ['Studying', 'Coding', 'Working', 'Other'];
   selectedCategory: string = 'Other';
 

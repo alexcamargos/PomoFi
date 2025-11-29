@@ -27,31 +27,36 @@
     </div>
 
     <div class="mode-toggles">
-      <button class="mode-btn" [class.active]="currentPreset === 25" (click)="setTimer(25)" title="Pomodoro 25m">
+      <button class="mode-btn" [class.active]="currentPreset === timerPresets.pomodoro25"
+        (click)="setTimer(timerPresets.pomodoro25)" title="Pomodoro {{timerPresets.pomodoro25}}m">
         <div class="custom-icon">
           <span class="material-symbols-rounded">radio_button_unchecked</span>
-          <span class="icon-number">25</span>
+          <span class="icon-number">{{timerPresets.pomodoro25}}</span>
         </div>
       </button>
-      <button class="mode-btn" [class.active]="currentPreset === 40" (click)="setTimer(40)" title="Pomodoro 40m">
+      <button class="mode-btn" [class.active]="currentPreset === timerPresets.pomodoro40"
+        (click)="setTimer(timerPresets.pomodoro40)" title="Pomodoro {{timerPresets.pomodoro40}}m">
         <div class="custom-icon">
           <span class="material-symbols-rounded">radio_button_unchecked</span>
-          <span class="icon-number">40</span>
+          <span class="icon-number">{{timerPresets.pomodoro40}}</span>
         </div>
       </button>
-      <button class="mode-btn" [class.active]="currentPreset === 55" (click)="setTimer(55)" title="Pomodoro 55m">
+      <button class="mode-btn" [class.active]="currentPreset === timerPresets.pomodoro55"
+        (click)="setTimer(timerPresets.pomodoro55)" title="Pomodoro {{timerPresets.pomodoro55}}m">
         <div class="custom-icon">
           <span class="material-symbols-rounded">radio_button_unchecked</span>
-          <span class="icon-number">55</span>
+          <span class="icon-number">{{timerPresets.pomodoro55}}</span>
         </div>
       </button>
 
       <div class="separator"></div>
 
-      <button class="mode-btn" [class.active]="currentPreset === 5" (click)="setTimer(5)" title="Short Break 5m">
+      <button class="mode-btn" [class.active]="currentPreset === timerPresets.shortBreak"
+        (click)="setTimer(timerPresets.shortBreak)" title="Short Break {{timerPresets.shortBreak}}m">
         <span class="material-symbols-rounded">coffee</span>
       </button>
-      <button class="mode-btn" [class.active]="currentPreset === 10" (click)="setTimer(10)" title="Long Break 10m">
+      <button class="mode-btn" [class.active]="currentPreset === timerPresets.longBreak"
+        (click)="setTimer(timerPresets.longBreak)" title="Long Break {{timerPresets.longBreak}}m">
         <span class="material-symbols-rounded">chair</span>
       </button>
     </div>
