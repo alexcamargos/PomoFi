@@ -40,6 +40,9 @@ export class TimerComponent implements OnInit, OnDestroy {
   @Input() minutes: number;
   @Input() seconds: number;
 
+  categories: string[] = ['Studying', 'Coding', 'Working', 'Other'];
+  selectedCategory: string = 'Other';
+
   @ViewChild('countdownAudio') countdownAudio:
     | ElementRef<HTMLAudioElement>
     | undefined;
@@ -225,6 +228,18 @@ export class TimerComponent implements OnInit, OnDestroy {
       this.seconds = DEFAULT_SECONDS;
       this.minutes = timer;
       this.totalTime = this.__totalTimeCalculation();
+
+      if (this.inputMinutes) {
+        this.inputMinutes.nativeElement.innerText = this.minutes
+          .toString()
+          .padStart(2, '0');
+      }
+
+      if (this.inputSeconds) {
+        this.inputSeconds.nativeElement.innerText = this.seconds
+          .toString()
+          .padStart(2, '0');
+      }
     }
   }
 
@@ -238,15 +253,18 @@ export class TimerComponent implements OnInit, OnDestroy {
 
       this.isAlive = true;
 
+      // Emit start event immediately
+      this.timerStart.emit();
+
+      // Try to play audio, but don't block timer start
       if (this.countdownAudio?.nativeElement) {
-        this.countdownAudio.nativeElement.onended = () => {
-          this.timerStart.emit();
-          this.timer = setInterval(() => {
-            this.__doCountdown();
-          }, 1000); // Each seconds.
-        };
-        this.countdownAudio.nativeElement.play();
+        this.countdownAudio.nativeElement.play().catch(e => console.warn('Audio playback failed:', e));
       }
+
+      // Start interval immediately
+      this.timer = setInterval(() => {
+        this.__doCountdown();
+      }, 1000);
     }
   }
 
@@ -259,17 +277,34 @@ export class TimerComponent implements OnInit, OnDestroy {
   }
 
   resetTimer() {
+    console.info('Timer stopped!');
+
     if (this.isAlive) {
-      console.info('Timer stopped!');
-
       this.timerPause.emit();
-
       clearInterval(this.timer);
-
       this.isAlive = false;
-      this.minutes = DEFAULT_MINUTES;
-      this.seconds = DEFAULT_SECONDS;
-      this.totalTime = this.__totalTimeCalculation();
     }
+
+    this.minutes = DEFAULT_MINUTES;
+    this.seconds = DEFAULT_SECONDS;
+    this.totalTime = this.__totalTimeCalculation();
+
+    if (this.inputMinutes) {
+      this.inputMinutes.nativeElement.innerText = this.minutes
+        .toString()
+        .padStart(2, '0');
+    }
+
+    if (this.inputSeconds) {
+      this.inputSeconds.nativeElement.innerText = this.seconds
+        .toString()
+        .padStart(2, '0');
+    }
+  }
+
+  onCategoryChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.selectedCategory = target.value;
+    console.info(`Category changed to: ${this.selectedCategory}`);
   }
 }

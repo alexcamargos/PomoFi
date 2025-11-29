@@ -1,95 +1,102 @@
-<div class="container">
-  <div class="pomodoro-controls" *ngIf="!isAlive">
-    <div class="pomodoro-controls-durations">
-      <h2>Duração</h2>
-      <div class="pomodoro-controls-durations-buttons">
-        <button (click)="setTimer(25)">25 min</button>
-        <button (click)="setTimer(40)">40 min</button>
-        <button (click)="setTimer(50)">50 min</button>
-      </div>
+<div class="timer-card">
+  <!-- Header -->
+  <div class="card-header">
+    <div class="title">
+      <span class="material-symbols-rounded">timer</span>
+      <span>Focus Timer</span>
     </div>
+    <div class="window-controls">
+      <button class="control-btn small">
+        <span class="material-symbols-rounded">remove</span>
+      </button>
+      <button class="control-btn small">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    </div>
+  </div>
 
-    <div class="pomodoro-controls-breaks">
-      <h2>Intervalos</h2>
-      <div class="pomodoro-controls-breaks-buttons">
-        <button (click)="setTimer(5)">Curta</button>
-        <button (click)="setTimer(10)">Longa</button>
+  <!-- Timer Display Section -->
+  <div class="timer-display-section">
+    <div class="time-value">
+      <span id="minutes" #inputMinutes [attr.contenteditable]="contentEditable"
+        [ngClass]="{ 'editable': contentEditable }" (keydown)="validateInput($event, 'minutes')" (blur)="saveValues()"
+        (focus)="handleFocus($event)" (click)="handleFocus($event)">
+        {{ minutes | number: "2.0" }}
+      </span>
+      <span class="colon">:</span>
+      <span id="seconds" #inputSeconds [attr.contenteditable]="contentEditable"
+        [ngClass]="{ 'editable': contentEditable }" (keydown)="validateInput($event, 'seconds')" (blur)="saveValues()"
+        (focus)="handleFocus($event)" (click)="handleFocus($event)">
+        {{ seconds | number: "2.0" }}
+      </span>
+    </div>
+    <div class="status-label">FOCUS TIME</div>
+
+    <!-- Timer Controls -->
+    <div class="timer-controls-grid">
+      <!-- Duration Section -->
+      <div class="control-group">
+        <span class="group-label">Duração</span>
+        <div class="buttons-row">
+          <button (click)="setTimer(25)" [class.active]="minutes === 25">25 MIN</button>
+          <button (click)="setTimer(40)" [class.active]="minutes === 40">40 MIN</button>
+          <button (click)="setTimer(50)" [class.active]="minutes === 50">50 MIN</button>
+        </div>
+      </div>
+
+      <!-- Intervals Section -->
+      <div class="control-group">
+        <span class="group-label">Intervalos</span>
+        <div class="buttons-row">
+          <button (click)="setTimer(5)" [class.active]="minutes === 5">CURTA</button>
+          <button (click)="setTimer(15)" [class.active]="minutes === 15">LONGA</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="outer-ring" [ngClass]="{ 'outer-ring-countdown': isAlive }">
-    <div class="timer">
-      <div id="time">
-        <div class="timer-minutes-display">
-          <div class="time-control-buttons" *ngIf="contentEditable">
-            <span class="material-symbols-rounded" (click)="decrementValue('minutes')">
-              do_not_disturb_on
-            </span>
-            <span class="material-symbols-rounded" (click)="incrementValue('minutes')">
-              add_circle
-            </span>
-          </div>
+  <!-- Main Controls -->
+  <div class="main-controls">
+    <button class="secondary-btn" (click)="resetTimer()" title="Reset">
+      <span class="material-symbols-rounded">restart_alt</span>
+    </button>
 
-          <span id="minutes" #inputMinutes [attr.contenteditable]="contentEditable"
-            [ngClass]="{ 'content-editable': contentEditable }" (keydown)="validateInput($event, 'minutes')"
-            (blur)="saveValues()" (focus)="handleFocus($event)" (click)="handleFocus($event)">
-            {{ minutes | number: "2.0" }}
-          </span>
-        </div>
+    <button class="play-btn" (click)="isAlive ? pauseTimer() : startTimer()">
+      <span class="material-symbols-rounded">{{ isAlive ? 'pause' : 'play_arrow' }}</span>
+    </button>
 
-        <span id="colon" class="time-colon-display">:</span>
+    <button class="secondary-btn" (click)="toggleContentEditable()" title="Settings / Edit Time">
+      <span class="material-symbols-rounded">settings</span>
+    </button>
+  </div>
 
-        <div class="timer-seconds-display">
-          <div class="time-control-buttons" *ngIf="contentEditable">
-            <span class="material-symbols-rounded" (click)="decrementValue('seconds')">
-              do_not_disturb_on
-            </span>
-            <span class="material-symbols-rounded" (click)="incrementValue('seconds')">
-              add_circle
-            </span>
-          </div>
-
-          <span id="seconds" #inputSeconds [attr.contenteditable]="contentEditable"
-            [ngClass]="{ 'content-editable': contentEditable }" (keydown)="validateInput($event, 'seconds')"
-            (blur)="saveValues()" (focus)="handleFocus($event)" (click)="handleFocus($event)">
-            {{ seconds | number: "2.0" }}
-          </span>
-        </div>
+  <!-- Footer / Stats -->
+  <div class="card-footer">
+    <div class="category-selector">
+      <span class="label">Category:</span>
+      <select (change)="onCategoryChange($event)" [value]="selectedCategory">
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+      <span class="material-symbols-rounded arrow-icon">arrow_drop_down</span>
+    </div>
+    <div class="stats-row">
+      <div class="stat">
+        <span class="value">0</span>
+        <span class="label">SESSIONS</span>
       </div>
-
-      <div class="command-container">
-        <!-- Start/Pause Controls -->
-        <div *ngIf="isAlive; then thenBlock; else elseBlock"></div>
-        <ng-template #thenBlock>
-          <div id="timer-command" (click)="pauseTimer()">
-            <span class="material-symbols-rounded"> pause </span>
-          </div>
-        </ng-template>
-        <ng-template #elseBlock>
-          <div id="timer-command" (click)="startTimer()">
-            <span class="material-symbols-rounded"> play_arrow </span>
-          </div>
-        </ng-template>
-
-        <div *ngIf="isAlive" id="timer-command" (click)="resetTimer()">
-          <span class="material-symbols-rounded"> replay </span>
-        </div>
+      <div class="stat">
+        <span class="value">0h</span>
+        <span class="label">FOCUS</span>
       </div>
-
-      <span id="setting">
-        <span class="material-symbols-rounded" (click)="toggleContentEditable()">
-          settings
-        </span>
-      </span>
     </div>
   </div>
 </div>
 
-<audio #countdownAudio controls class="display-nome">
-  <source type="audio/wav" src="../../assets/sound/countdown.wav" />
+<!-- Audio Elements -->
+<audio #countdownAudio class="display-none">
+  <source type="audio/wav" src="/assets/sound/countdown.wav" />
 </audio>
 
-<audio #pomodoroCompleteAudio controls class="display-nome">
-  <source type="audio/wav" src="../../assets/sound/complete.mp3" />
+<audio #pomodoroCompleteAudio class="display-none">
+  <source type="audio/wav" src="/assets/sound/complete.mp3" />
 </audio>
