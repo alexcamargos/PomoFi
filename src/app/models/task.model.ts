@@ -1,3 +1,5 @@
+import { PomodoroSession } from './pomodoro-session.model';
+
 export interface Task {
     id: string;
     title: string;
@@ -7,4 +9,5 @@ export interface Task {
     status: 'pending' | 'completed';
     createdAt: Date;
     completedAt?: Date;
+    sessions?: PomodoroSession[];
 }

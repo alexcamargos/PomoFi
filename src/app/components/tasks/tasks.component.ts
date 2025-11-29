@@ -18,6 +18,8 @@ export class TasksComponent implements OnInit {
 
     editingTask: Task | null = null;
 
+    activeTask: Task | null = null;
+
     constructor(private taskService: TaskService) { }
 
     ngOnInit(): void {
@@ -27,6 +29,18 @@ export class TasksComponent implements OnInit {
                 return a.status === 'pending' ? -1 : 1;
             });
         });
+
+        this.taskService.activeTask$.subscribe(task => {
+            this.activeTask = task;
+        });
+    }
+
+    setActiveTask(task: Task): void {
+        if (this.activeTask?.id === task.id) {
+            this.taskService.setActiveTask(null);
+        } else {
+            this.taskService.setActiveTask(task);
+        }
     }
 
     saveTask(): void {

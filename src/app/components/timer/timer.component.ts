@@ -26,6 +26,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
+import { TaskService } from '../../services/task.service';
+import { Task } from '../../models/task.model';
+import { PomodoroSession } from '../../models/pomodoro-session.model';
+import { v4 as uuidv4 } from 'uuid';
 
 // Default values for timer.
 const DEFAULT_MINUTES: number = 25; // Default minutes value.
@@ -51,6 +55,9 @@ export class TimerComponent implements OnInit, OnDestroy {
   @Input() seconds: number;
   @Input() isMuted: boolean = false;
 
+  activeTask: Task | null = null;
+  private currentSessionStartTime: Date | null = null;
+
   timerPresets = {
     pomodoro25: 25,
     pomodoro40: 40,
@@ -73,7 +80,8 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private taskService: TaskService
   ) {
     console.info('TimerComponent constructor!');
 
@@ -96,6 +104,11 @@ export class TimerComponent implements OnInit, OnDestroy {
     console.info('TimerComponent initialized!');
 
     this.totalTime = this.__totalTimeCalculation();
+
+    this.taskService.activeTask$.subscribe(task => {
+      this.activeTask = task;
+      this.cdr.markForCheck();
+    });
   }
 
   ngOnDestroy() {
@@ -146,9 +159,39 @@ export class TimerComponent implements OnInit, OnDestroy {
             .then(() => console.info('Complete audio playing'))
             .catch(e => console.warn('Complete audio playback failed:', e));
         }
+
+        this.handleTimerComplete();
         this.resetTimer();
       });
     }
+  }
+
+  private handleTimerComplete() {
+    if (this.activeTask && this.currentSessionStartTime) {
+      const endTime = new Date();
+      // Calculate duration in minutes (approx) based on preset or actual elapsed?
+      // Let's use the current preset as the type/duration reference.
+      // Or calculate diff: (endTime - startTime) / 60000
+
+      let type = 'Custom';
+      if (this.currentPreset === 25) type = 'Pomodoro 25';
+      else if (this.currentPreset === 40) type = 'Pomodoro 40';
+      else if (this.currentPreset === 55) type = 'Pomodoro 55';
+      else if (this.currentPreset === 5) type = 'Short Break';
+      else if (this.currentPreset === 10) type = 'Long Break';
+
+      const session: PomodoroSession = {
+        id: uuidv4(),
+        taskId: this.activeTask.id,
+        startTime: this.currentSessionStartTime,
+        endTime: endTime,
+        durationMinutes: this.currentPreset,
+        type: type
+      };
+
+      this.taskService.addSessionToTask(this.activeTask.id, session);
+    }
+    this.currentSessionStartTime = null;
   }
 
   incrementValue(type: string) {
@@ -299,6 +342,7 @@ export class TimerComponent implements OnInit, OnDestroy {
       }
 
       this.isAlive = true;
+      this.currentSessionStartTime = new Date();
 
       // Emit start event immediately
       this.timerStart.emit();
@@ -327,6 +371,22 @@ export class TimerComponent implements OnInit, OnDestroy {
 
     this.clearTimer();
     this.isAlive = false;
+    this.currentSessionStartTime = null; // Reset start time on pause? Or keep it? 
+    // If we pause, the session is interrupted. 
+    // For simplicity, let's assume pausing invalidates the "continuous" session or we just reset start time when resuming?
+    // Actually, if they resume, we should probably keep the original start time OR just track duration.
+    // But the requirement is "start time, end time".
+    // If paused, maybe we should treat it as a break?
+    // Let's just reset currentSessionStartTime on pause for now, meaning only uninterrupted sessions count?
+    // Or better: keep it null on pause, and set it again on start if it's null?
+    // But startTimer sets it to new Date().
+    // If we want to track the *actual* work done, we might need more complex logic.
+    // For MVP/User Request: "When a pomodoro is finished...".
+    // So if they pause and resume, it's still one pomodoro finishing.
+    // But the start time would be the *latest* resume time? Or the original?
+    // Let's stick to: startTimer sets start time. If paused, we lose that start time context in this simple implementation.
+    // The user said "executed pomodoro". Usually implies a full session.
+
     this.cdr.markForCheck();
   }
 
@@ -338,6 +398,8 @@ export class TimerComponent implements OnInit, OnDestroy {
       this.clearTimer();
       this.isAlive = false;
     }
+
+    this.currentSessionStartTime = null;
 
     this.minutes = DEFAULT_MINUTES;
     this.seconds = DEFAULT_SECONDS;

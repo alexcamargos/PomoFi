@@ -14,7 +14,9 @@
 
   <!-- Timer Display -->
   <div class="timer-display-section">
-    <div class="status-label">FOCUS</div>
+    <div class="status-label" [class.has-task]="activeTask">
+      {{ activeTask ? activeTask.title : 'FOCUS' }}
+    </div>
 
     <div class="time-value">
       <span #inputMinutes [contentEditable]="contentEditable" (blur)="saveValues()"
