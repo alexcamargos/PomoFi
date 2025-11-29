@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="widget-header" cdkDragHandle>
     <div class="title">
-      <span class="material-symbols-rounded">grid_view</span>
+      <span class="material-symbols-rounded">smart_display</span>
       <span>LoFi Radio</span>
     </div>
 
@@ -24,12 +24,7 @@
 
   <!-- Video Body -->
   <div class="video-body" [class.hidden]="isMinimized">
-    <youtube-player [videoId]="'jfKfPfyJRdk'" (ready)="onReady($event)" [playerVars]="{
-        autoplay: 0,
-        controls: 1,
-        modestbranding: 1,
-        rel: 0,
-        showinfo: 0
-      }"></youtube-player>
+    <youtube-player [videoId]="'jfKfPfyJRdk'" [width]="360" [height]="200" (ready)="onReady($event)"
+      (stateChange)="onStateChange($event)"></youtube-player>
   </div>
 </div>
