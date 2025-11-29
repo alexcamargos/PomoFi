@@ -19,8 +19,17 @@ export class TasksComponent implements OnInit {
     editingTask: Task | null = null;
 
     activeTask: Task | null = null;
+    expandedTaskId: string | null = null;
 
     constructor(private taskService: TaskService) { }
+
+    toggleTaskDetails(taskId: string): void {
+        if (this.expandedTaskId === taskId) {
+            this.expandedTaskId = null;
+        } else {
+            this.expandedTaskId = taskId;
+        }
+    }
 
     ngOnInit(): void {
         this.taskService.tasks$.subscribe(tasks => {

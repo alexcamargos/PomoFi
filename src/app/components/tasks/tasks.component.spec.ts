@@ -116,4 +116,15 @@ describe('TasksComponent', () => {
         component.setActiveTask(task);
         expect(mockTaskService.setActiveTask).toHaveBeenCalledWith(null);
     });
+
+    it('should toggle task details', () => {
+        component.toggleTaskDetails('1');
+        expect(component.expandedTaskId).toBe('1');
+
+        component.toggleTaskDetails('1');
+        expect(component.expandedTaskId).toBeNull();
+
+        component.toggleTaskDetails('2');
+        expect(component.expandedTaskId).toBe('2');
+    });
 });
