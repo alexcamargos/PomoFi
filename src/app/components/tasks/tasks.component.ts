@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Task } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,9 +8,10 @@ import { v4 as uuidv4 } from 'uuid';
 @Component({
     selector: 'app-tasks',
     templateUrl: './tasks.component.html',
-    styleUrls: ['./tasks.component.sass']
+    styleUrls: ['./tasks.component.sass'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TasksComponent implements OnInit {
+export class TasksComponent implements OnInit, OnDestroy {
     tasks: Task[] = [];
     newTaskTitle: string = '';
     newTaskPomodoros: number = 1;
@@ -20,8 +23,12 @@ export class TasksComponent implements OnInit {
 
     activeTask: Task | null = null;
     expandedTaskId: string | null = null;
+    private destroy$ = new Subject<void>();
 
-    constructor(private taskService: TaskService) { }
+    constructor(
+        private taskService: TaskService,
+        private cdr: ChangeDetectorRef
+    ) { }
 
     toggleTaskDetails(taskId: string): void {
         if (this.expandedTaskId === taskId) {
@@ -32,16 +39,27 @@ export class TasksComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.taskService.tasks$.subscribe(tasks => {
-            this.tasks = [...tasks].sort((a, b) => {
-                if (a.status === b.status) return 0;
-                return a.status === 'pending' ? -1 : 1;
+        this.taskService.tasks$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(tasks => {
+                this.tasks = [...tasks].sort((a, b) => {
+                    if (a.status === b.status) return 0;
+                    return a.status === 'pending' ? -1 : 1;
+                });
+                this.cdr.markForCheck();
             });
-        });
 
-        this.taskService.activeTask$.subscribe(task => {
-            this.activeTask = task;
-        });
+        this.taskService.activeTask$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(task => {
+                this.activeTask = task;
+                this.cdr.markForCheck();
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     setActiveTask(task: Task): void {

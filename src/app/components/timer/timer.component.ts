@@ -26,6 +26,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
 import { PomodoroSession } from '../../models/pomodoro-session.model';
@@ -48,8 +50,8 @@ export class TimerComponent implements OnInit, OnDestroy {
   contentEditable: boolean;
   currentPreset: number = DEFAULT_MINUTES;
 
-  totalTime: any;
-  timer: any;
+  totalTime: number = 0;
+  timer: ReturnType<typeof setInterval> | undefined;
 
   @Input() minutes: number;
   @Input() seconds: number;
@@ -57,6 +59,7 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   activeTask: Task | null = null;
   private currentSessionStartTime: Date | null = null;
+  private destroy$ = new Subject<void>();
 
   timerPresets = {
     pomodoro25: 25,
@@ -102,30 +105,35 @@ export class TimerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.info('TimerComponent initialized!');
 
-    this.totalTime = this.__totalTimeCalculation();
+    this.totalTime = this.calculateTotalTime();
 
-    this.taskService.activeTask$.subscribe(task => {
-      this.activeTask = task;
-      this.cdr.markForCheck();
-    });
+    this.taskService.activeTask$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(task => {
+        this.activeTask = task;
+        this.cdr.markForCheck();
+      });
 
-    this.taskService.tasks$.subscribe(tasks => {
-      this.pendingTasks = tasks.filter(t => t.status === 'pending');
-      this.cdr.markForCheck();
-    });
+    this.taskService.tasks$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(tasks => {
+        this.pendingTasks = tasks.filter(t => t.status === 'pending');
+        this.cdr.markForCheck();
+      });
   }
 
   ngOnDestroy() {
     console.info('TimerComponent destroyed!');
-
+    this.destroy$.next();
+    this.destroy$.complete();
     this.clearTimer();
   }
 
-  private __totalTimeCalculation(): number {
+  private calculateTotalTime(): number {
     return this.minutes * 60 + this.seconds;
   }
 
-  private __doCountdown() {
+  private doCountdown() {
     if (this.totalTime > 0) {
       this.totalTime--;
       this.minutes = Math.floor(this.totalTime / 60);
@@ -211,7 +219,7 @@ export class TimerComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.totalTime = this.__totalTimeCalculation();
+    this.totalTime = this.calculateTotalTime();
     this.cdr.markForCheck();
   }
 
@@ -228,7 +236,7 @@ export class TimerComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.totalTime = this.__totalTimeCalculation();
+    this.totalTime = this.calculateTotalTime();
     this.cdr.markForCheck();
   }
 
@@ -264,7 +272,7 @@ export class TimerComponent implements OnInit, OnDestroy {
         this.seconds = seconds > 59 ? 59 : seconds;
       }
 
-      this.totalTime = this.__totalTimeCalculation();
+      this.totalTime = this.calculateTotalTime();
       this.cdr.markForCheck();
     }
   }
@@ -320,7 +328,7 @@ export class TimerComponent implements OnInit, OnDestroy {
       this.seconds = DEFAULT_SECONDS;
       this.minutes = timer;
       this.currentPreset = timer;
-      this.totalTime = this.__totalTimeCalculation();
+      this.totalTime = this.calculateTotalTime();
 
       if (this.inputMinutes) {
         this.inputMinutes.nativeElement.innerText = this.minutes
@@ -361,7 +369,7 @@ export class TimerComponent implements OnInit, OnDestroy {
       // Run interval outside Angular Zone to prevent global change detection every second
       this.ngZone.runOutsideAngular(() => {
         this.timer = setInterval(() => {
-          this.__doCountdown();
+          this.doCountdown();
         }, 1000);
       });
 
@@ -375,21 +383,7 @@ export class TimerComponent implements OnInit, OnDestroy {
 
     this.clearTimer();
     this.isAlive = false;
-    this.currentSessionStartTime = null; // Reset start time on pause? Or keep it? 
-    // If we pause, the session is interrupted. 
-    // For simplicity, let's assume pausing invalidates the "continuous" session or we just reset start time when resuming?
-    // Actually, if they resume, we should probably keep the original start time OR just track duration.
-    // But the requirement is "start time, end time".
-    // If paused, maybe we should treat it as a break?
-    // Let's just reset currentSessionStartTime on pause for now, meaning only uninterrupted sessions count?
-    // Or better: keep it null on pause, and set it again on start if it's null?
-    // But startTimer sets it to new Date().
-    // If we want to track the *actual* work done, we might need more complex logic.
-    // For MVP/User Request: "When a pomodoro is finished...".
-    // So if they pause and resume, it's still one pomodoro finishing.
-    // But the start time would be the *latest* resume time? Or the original?
-    // Let's stick to: startTimer sets start time. If paused, we lose that start time context in this simple implementation.
-    // The user said "executed pomodoro". Usually implies a full session.
+    this.currentSessionStartTime = null;
 
     this.cdr.markForCheck();
   }
@@ -408,7 +402,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     this.minutes = DEFAULT_MINUTES;
     this.seconds = DEFAULT_SECONDS;
     this.currentPreset = DEFAULT_MINUTES;
-    this.totalTime = this.__totalTimeCalculation();
+    this.totalTime = this.calculateTotalTime();
 
     if (this.inputMinutes) {
       this.inputMinutes.nativeElement.innerText = this.minutes
@@ -427,7 +421,7 @@ export class TimerComponent implements OnInit, OnDestroy {
   private clearTimer() {
     if (this.timer) {
       clearInterval(this.timer);
-      this.timer = null;
+      this.timer = undefined;
     }
   }
 
