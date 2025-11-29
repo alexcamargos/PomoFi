@@ -11,6 +11,7 @@ export class DockComponent implements OnInit {
     @Input() isMuted: boolean = false;
     @Output() toggleTimer = new EventEmitter<void>();
     @Output() toggleMute = new EventEmitter<void>();
+    @Output() toggleTasks = new EventEmitter<void>();
 
     currentTime: string = '';
     currentDate: string = '';
@@ -34,5 +35,9 @@ export class DockComponent implements OnInit {
 
     onMuteClick(): void {
         this.toggleMute.emit();
+    }
+
+    onTasksClick(): void {
+        this.toggleTasks.emit();
     }
 }

@@ -14,6 +14,7 @@ export class AppComponent {
   isPlayerPlaying: boolean = false;
   isTimerVisible: boolean = true;
   isTimerRunning: boolean = false;
+  isTasksVisible: boolean = false;
 
   togglePlayerVisibility() {
     this.isPlayerVisible = !this.isPlayerVisible;
@@ -21,6 +22,10 @@ export class AppComponent {
 
   toggleTimerVisibility() {
     this.isTimerVisible = !this.isTimerVisible;
+  }
+
+  toggleTasksVisibility() {
+    this.isTasksVisible = !this.isTasksVisible;
   }
 
   onTimerStart() {

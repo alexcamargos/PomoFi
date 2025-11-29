@@ -13,7 +13,11 @@
       (playbackStateChange)="onPlayerStateChange($event)"></app-youtube-player>
   </div>
 
+  <!-- Tasks Component -->
+  <app-tasks *ngIf="isTasksVisible" cdkDrag></app-tasks>
+
   <!-- Dock -->
   <app-dock [isTimerActive]="isTimerVisible" [isTimerRunning]="isTimerRunning" [isMuted]="isMuted"
-    (toggleTimer)="toggleTimerVisibility()" (toggleMute)="toggleMute()"></app-dock>
+    (toggleTimer)="toggleTimerVisibility()" (toggleMute)="toggleMute()"
+    (toggleTasks)="toggleTasksVisibility()"></app-dock>
 </div>

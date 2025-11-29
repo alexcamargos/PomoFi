@@ -17,7 +17,7 @@
         <span class="material-symbols-rounded" [class.oscillate]="isTimerRunning">timer</span>
     </button>
 
-    <button class="dock-item app-icon" title="Tasks">
+    <button class="dock-item app-icon" (click)="onTasksClick()" title="Tasks">
         <span class="material-symbols-rounded">check_circle</span>
     </button>
 
