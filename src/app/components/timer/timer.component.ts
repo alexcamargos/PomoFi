@@ -62,12 +62,8 @@ export class TimerComponent implements OnInit, OnDestroy {
   categories: string[] = ['Studying', 'Coding', 'Working', 'Other'];
   selectedCategory: string = 'Other';
 
-  @ViewChild('countdownAudio') countdownAudio:
-    | ElementRef<HTMLAudioElement>
-    | undefined;
-  @ViewChild('pomodoroCompleteAudio') pomodoroCompleteAudio:
-    | ElementRef<HTMLAudioElement>
-    | undefined;
+  private countdownAudio: HTMLAudioElement;
+  private pomodoroCompleteAudio: HTMLAudioElement;
 
   @ViewChild('inputMinutes') inputMinutes: ElementRef<HTMLSpanElement> | undefined;
   @ViewChild('inputSeconds') inputSeconds: ElementRef<HTMLSpanElement> | undefined;
@@ -88,15 +84,18 @@ export class TimerComponent implements OnInit, OnDestroy {
     // Defaults timer control properties.
     this.isAlive = false; // Timer is not alive.
     this.contentEditable = false; // Span element is not editable.
+
+    // Initialize Audio objects
+    this.countdownAudio = new Audio('/assets/sound/countdown.mp3');
+    this.pomodoroCompleteAudio = new Audio('/assets/sound/complete.mp3');
+    this.countdownAudio.load();
+    this.pomodoroCompleteAudio.load();
   }
 
   ngOnInit(): void {
     console.info('TimerComponent initialized!');
 
     this.totalTime = this.__totalTimeCalculation();
-
-    this.countdownAudio?.nativeElement.load();
-    this.pomodoroCompleteAudio?.nativeElement.load();
   }
 
   ngOnDestroy() {
@@ -143,7 +142,9 @@ export class TimerComponent implements OnInit, OnDestroy {
       // Timer finished
       this.ngZone.run(() => {
         if (!this.isMuted) {
-          this.pomodoroCompleteAudio?.nativeElement.play();
+          this.pomodoroCompleteAudio.play()
+            .then(() => console.info('Complete audio playing'))
+            .catch(e => console.warn('Complete audio playback failed:', e));
         }
         this.resetTimer();
       });
@@ -303,8 +304,10 @@ export class TimerComponent implements OnInit, OnDestroy {
       this.timerStart.emit();
 
       // Try to play audio, but don't block timer start
-      if (this.countdownAudio?.nativeElement && !this.isMuted) {
-        this.countdownAudio.nativeElement.play().catch(e => console.warn('Audio playback failed:', e));
+      if (this.countdownAudio && !this.isMuted) {
+        this.countdownAudio.play()
+          .then(() => console.info('Countdown audio playing'))
+          .catch(e => console.warn('Countdown audio playback failed:', e));
       }
 
       // Run interval outside Angular Zone to prevent global change detection every second
