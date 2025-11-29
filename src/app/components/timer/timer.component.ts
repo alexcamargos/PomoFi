@@ -19,7 +19,13 @@ import {
   ElementRef,
   Output,
   EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  NgZone,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatIconModule } from '@angular/material/icon';
 
 // Default values for timer.
 const DEFAULT_MINUTES: number = 25; // Default minutes value.
@@ -29,16 +35,21 @@ const DEFAULT_SECONDS: number = 0; // Default seconds value.
   selector: 'app-timer',
   templateUrl: './timer.component.html',
   styleUrls: ['./timer.component.sass'],
+  standalone: true,
+  imports: [CommonModule, DragDropModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerComponent implements OnInit, OnDestroy {
   isAlive: boolean;
   contentEditable: boolean;
+  currentPreset: number = DEFAULT_MINUTES;
 
   totalTime: any;
   timer: any;
 
   @Input() minutes: number;
   @Input() seconds: number;
+  @Input() isMuted: boolean = false;
 
   categories: string[] = ['Studying', 'Coding', 'Working', 'Other'];
   selectedCategory: string = 'Other';
@@ -56,7 +67,10 @@ export class TimerComponent implements OnInit, OnDestroy {
   @Output() timerStart = new EventEmitter<void>();
   @Output() timerPause = new EventEmitter<void>();
 
-  constructor() {
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {
     console.info('TimerComponent constructor!');
 
     // Defaults timer properties.
@@ -80,7 +94,7 @@ export class TimerComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     console.info('TimerComponent destroyed!');
 
-    clearInterval(this.timer);
+    this.clearTimer();
   }
 
   private __totalTimeCalculation(): number {
@@ -93,6 +107,11 @@ export class TimerComponent implements OnInit, OnDestroy {
       this.minutes = Math.floor(this.totalTime / 60);
       this.seconds = this.totalTime % 60;
 
+      // Update DOM directly to avoid triggering change detection for the whole component tree
+      // or use markForCheck if we want to rely on Angular's cycle but optimized.
+      // Since we are outside zone, we must manually trigger detection or update DOM.
+      // Updating DOM directly is most performant for high-frequency updates like this.
+
       if (this.inputMinutes) {
         this.inputMinutes.nativeElement.innerText = this.minutes
           .toString()
@@ -104,9 +123,22 @@ export class TimerComponent implements OnInit, OnDestroy {
           .toString()
           .padStart(2, '0');
       }
+
+      // We don't call cdr.detectChanges() here because we updated the DOM manually.
+      // However, if other parts of the UI depend on 'minutes' or 'seconds' bindings 
+      // (like the title or other displays not using the #input refs), they won't update.
+      // Looking at the template, the values are bound via {{ minutes | number }} inside the spans.
+      // But we are overwriting innerText.
+      // Let's stick to the manual DOM update for the timer digits as it's efficient.
+
     } else {
-      this.pomodoroCompleteAudio?.nativeElement.play();
-      this.resetTimer();
+      // Timer finished
+      this.ngZone.run(() => {
+        if (!this.isMuted) {
+          this.pomodoroCompleteAudio?.nativeElement.play();
+        }
+        this.resetTimer();
+      });
     }
   }
 
@@ -124,6 +156,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     }
 
     this.totalTime = this.__totalTimeCalculation();
+    this.cdr.markForCheck();
   }
 
   decrementValue(type: string) {
@@ -140,6 +173,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     }
 
     this.totalTime = this.__totalTimeCalculation();
+    this.cdr.markForCheck();
   }
 
   toggleContentEditable() {
@@ -152,6 +186,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     }
 
     this.pauseTimer();
+    this.cdr.markForCheck();
   }
 
   saveValues() {
@@ -174,6 +209,7 @@ export class TimerComponent implements OnInit, OnDestroy {
       }
 
       this.totalTime = this.__totalTimeCalculation();
+      this.cdr.markForCheck();
     }
   }
 
@@ -227,6 +263,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     if (!this.isAlive) {
       this.seconds = DEFAULT_SECONDS;
       this.minutes = timer;
+      this.currentPreset = timer;
       this.totalTime = this.__totalTimeCalculation();
 
       if (this.inputMinutes) {
@@ -240,6 +277,7 @@ export class TimerComponent implements OnInit, OnDestroy {
           .toString()
           .padStart(2, '0');
       }
+      this.cdr.markForCheck();
     }
   }
 
@@ -257,14 +295,18 @@ export class TimerComponent implements OnInit, OnDestroy {
       this.timerStart.emit();
 
       // Try to play audio, but don't block timer start
-      if (this.countdownAudio?.nativeElement) {
+      if (this.countdownAudio?.nativeElement && !this.isMuted) {
         this.countdownAudio.nativeElement.play().catch(e => console.warn('Audio playback failed:', e));
       }
 
-      // Start interval immediately
-      this.timer = setInterval(() => {
-        this.__doCountdown();
-      }, 1000);
+      // Run interval outside Angular Zone to prevent global change detection every second
+      this.ngZone.runOutsideAngular(() => {
+        this.timer = setInterval(() => {
+          this.__doCountdown();
+        }, 1000);
+      });
+
+      this.cdr.markForCheck();
     }
   }
 
@@ -272,8 +314,9 @@ export class TimerComponent implements OnInit, OnDestroy {
     console.info('Timer paused!');
     this.timerPause.emit();
 
-    clearInterval(this.timer);
+    this.clearTimer();
     this.isAlive = false;
+    this.cdr.markForCheck();
   }
 
   resetTimer() {
@@ -281,12 +324,13 @@ export class TimerComponent implements OnInit, OnDestroy {
 
     if (this.isAlive) {
       this.timerPause.emit();
-      clearInterval(this.timer);
+      this.clearTimer();
       this.isAlive = false;
     }
 
     this.minutes = DEFAULT_MINUTES;
     this.seconds = DEFAULT_SECONDS;
+    this.currentPreset = DEFAULT_MINUTES;
     this.totalTime = this.__totalTimeCalculation();
 
     if (this.inputMinutes) {
@@ -300,11 +344,20 @@ export class TimerComponent implements OnInit, OnDestroy {
         .toString()
         .padStart(2, '0');
     }
+    this.cdr.markForCheck();
+  }
+
+  private clearTimer() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
   }
 
   onCategoryChange(event: Event) {
     const target = event.target as HTMLSelectElement;
     this.selectedCategory = target.value;
     console.info(`Category changed to: ${this.selectedCategory}`);
+    this.cdr.markForCheck();
   }
 }

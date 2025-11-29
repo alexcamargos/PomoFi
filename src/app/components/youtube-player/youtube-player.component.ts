@@ -1,18 +1,38 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { YouTubePlayerModule } from '@angular/youtube-player';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-youtube-player',
   templateUrl: './youtube-player.component.html',
   styleUrls: ['./youtube-player.component.sass'],
+  standalone: true,
+  imports: [CommonModule, YouTubePlayerModule, DragDropModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class YoutubePlayerComponent implements OnInit {
+export class YoutubePlayerComponent implements OnInit, OnChanges {
   apiLoaded = false;
   player: any;
 
   isMinimized = false;
   isMaximized = false;
 
+  @Input() isMuted: boolean = false;
+  @Output() playbackStateChange = new EventEmitter<boolean>();
+
   constructor() { }
+
+  ngOnChanges() {
+    if (this.player) {
+      if (this.isMuted) {
+        this.player.mute();
+      } else {
+        this.player.unMute();
+      }
+    }
+  }
 
   ngOnInit() {
     if (!this.apiLoaded) {
@@ -33,6 +53,12 @@ export class YoutubePlayerComponent implements OnInit {
       this.player.playVideo();
       this.pendingPlay = false;
     }
+  }
+
+  onStateChange(event: any) {
+    // YT.PlayerState.PLAYING is 1
+    const isPlaying = event.data === 1;
+    this.playbackStateChange.emit(isPlaying);
   }
 
   playVideo() {
