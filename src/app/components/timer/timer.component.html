@@ -1,91 +1,98 @@
 <div class="timer-card">
   <!-- Header -->
-  <div class="card-header">
+  <div class="card-header" cdkDragHandle>
     <div class="title">
       <span class="material-symbols-rounded">timer</span>
-      <span>Focus Timer</span>
+      <span>PomoFi Timer</span>
     </div>
     <div class="window-controls">
       <button class="control-btn small">
-        <span class="material-symbols-rounded">remove</span>
-      </button>
-      <button class="control-btn small">
-        <span class="material-symbols-rounded">close</span>
+        <span class="material-symbols-rounded">more_horiz</span>
       </button>
     </div>
   </div>
 
-  <!-- Timer Display Section -->
+  <!-- Timer Display -->
   <div class="timer-display-section">
+    <div class="status-label">FOCUS</div>
+
     <div class="time-value">
-      <span id="minutes" #inputMinutes [attr.contenteditable]="contentEditable"
-        [ngClass]="{ 'editable': contentEditable }" (keydown)="validateInput($event, 'minutes')" (blur)="saveValues()"
-        (focus)="handleFocus($event)" (click)="handleFocus($event)">
-        {{ minutes | number: "2.0" }}
-      </span>
+      <span #inputMinutes [contentEditable]="contentEditable" (blur)="saveValues()"
+        (keydown)="validateInput($event, 'minutes')" (focus)="handleFocus($event)" [class.editable]="contentEditable">{{
+        minutes | number: '2.0' }}</span>
       <span class="colon">:</span>
-      <span id="seconds" #inputSeconds [attr.contenteditable]="contentEditable"
-        [ngClass]="{ 'editable': contentEditable }" (keydown)="validateInput($event, 'seconds')" (blur)="saveValues()"
-        (focus)="handleFocus($event)" (click)="handleFocus($event)">
-        {{ seconds | number: "2.0" }}
-      </span>
+      <span #inputSeconds [contentEditable]="contentEditable" (blur)="saveValues()"
+        (keydown)="validateInput($event, 'seconds')" (focus)="handleFocus($event)" [class.editable]="contentEditable">{{
+        seconds | number: '2.0' }}</span>
     </div>
-    <div class="status-label">FOCUS TIME</div>
 
-    <!-- Timer Controls -->
-    <div class="timer-controls-grid">
-      <!-- Duration Section -->
-      <div class="control-group">
-        <span class="group-label">Duração</span>
-        <div class="buttons-row">
-          <button (click)="setTimer(25)" [class.active]="minutes === 25">25 MIN</button>
-          <button (click)="setTimer(40)" [class.active]="minutes === 40">40 MIN</button>
-          <button (click)="setTimer(50)" [class.active]="minutes === 50">50 MIN</button>
+    <div class="mode-toggles">
+      <button class="mode-btn" [class.active]="currentPreset === 25" (click)="setTimer(25)" title="Pomodoro 25m">
+        <div class="custom-icon">
+          <span class="material-symbols-rounded">radio_button_unchecked</span>
+          <span class="icon-number">25</span>
         </div>
-      </div>
+      </button>
+      <button class="mode-btn" [class.active]="currentPreset === 40" (click)="setTimer(40)" title="Pomodoro 40m">
+        <div class="custom-icon">
+          <span class="material-symbols-rounded">radio_button_unchecked</span>
+          <span class="icon-number">40</span>
+        </div>
+      </button>
+      <button class="mode-btn" [class.active]="currentPreset === 55" (click)="setTimer(55)" title="Pomodoro 55m">
+        <div class="custom-icon">
+          <span class="material-symbols-rounded">radio_button_unchecked</span>
+          <span class="icon-number">55</span>
+        </div>
+      </button>
 
-      <!-- Intervals Section -->
-      <div class="control-group">
-        <span class="group-label">Intervalos</span>
-        <div class="buttons-row">
-          <button (click)="setTimer(5)" [class.active]="minutes === 5">CURTA</button>
-          <button (click)="setTimer(15)" [class.active]="minutes === 15">LONGA</button>
-        </div>
-      </div>
+      <div class="separator"></div>
+
+      <button class="mode-btn" [class.active]="currentPreset === 5" (click)="setTimer(5)" title="Short Break 5m">
+        <span class="material-symbols-rounded">coffee</span>
+      </button>
+      <button class="mode-btn" [class.active]="currentPreset === 10" (click)="setTimer(10)" title="Long Break 10m">
+        <span class="material-symbols-rounded">chair</span>
+      </button>
     </div>
   </div>
 
   <!-- Main Controls -->
   <div class="main-controls">
     <button class="secondary-btn" (click)="resetTimer()" title="Reset">
-      <span class="material-symbols-rounded">restart_alt</span>
+      <span class="material-symbols-rounded">refresh</span>
     </button>
 
     <button class="play-btn" (click)="isAlive ? pauseTimer() : startTimer()">
       <span class="material-symbols-rounded">{{ isAlive ? 'pause' : 'play_arrow' }}</span>
     </button>
 
-    <button class="secondary-btn" (click)="toggleContentEditable()" title="Settings / Edit Time">
-      <span class="material-symbols-rounded">settings</span>
+    <button class="secondary-btn" (click)="toggleContentEditable()" title="Edit Time">
+      <span class="material-symbols-rounded">edit</span>
     </button>
   </div>
 
-  <!-- Footer / Stats -->
+  <!-- Footer -->
   <div class="card-footer">
-    <div class="category-selector">
-      <span class="label">Category:</span>
-      <select (change)="onCategoryChange($event)" [value]="selectedCategory">
-        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
-      </select>
-      <span class="material-symbols-rounded arrow-icon">arrow_drop_down</span>
+    <div class="category-section">
+      <span class="label">CATEGORY</span>
+      <div class="category-selector">
+        <select (change)="onCategoryChange($event)">
+          <option *ngFor="let category of categories" [value]="category" [selected]="category === selectedCategory">
+            {{ category }}
+          </option>
+        </select>
+        <span class="material-symbols-rounded arrow-icon">expand_more</span>
+      </div>
     </div>
-    <div class="stats-row">
+
+    <div class="stats-container">
       <div class="stat">
-        <span class="value">0</span>
-        <span class="label">SESSIONS</span>
+        <span class="value">4</span>
+        <span class="label">ROUNDS</span>
       </div>
       <div class="stat">
-        <span class="value">0h</span>
+        <span class="value">2h</span>
         <span class="label">FOCUS</span>
       </div>
     </div>
@@ -94,9 +101,8 @@
 
 <!-- Audio Elements -->
 <audio #countdownAudio class="display-none">
-  <source type="audio/wav" src="/assets/sound/countdown.wav" />
+  <source type="audio/wav" src="/assets/sound/countdown.mp3" />
 </audio>
-
 <audio #pomodoroCompleteAudio class="display-none">
   <source type="audio/wav" src="/assets/sound/complete.mp3" />
 </audio>
