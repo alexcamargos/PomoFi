@@ -1,0 +1,111 @@
+.dock-container
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  padding: 0.75rem 1.5rem
+  border-radius: 24px
+  background: rgba(28, 30, 38, 0.7)
+  backdrop-filter: blur(20px)
+  border: 1px solid rgba(255, 255, 255, 0.05)
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4)
+  pointer-events: auto
+  
+  .separator
+    width: 1px
+    height: 24px
+    background: rgba(255, 255, 255, 0.1)
+    margin: 0 0.5rem
+
+  .dock-item
+    display: flex
+    align-items: center
+    justify-content: center
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1)
+    
+    &.time-widget
+      display: flex
+      align-items: center
+      gap: 0.75rem
+      padding-right: 0.5rem
+      
+      .time-icon
+        width: 36px
+        height: 36px
+        border-radius: 10px
+        background: rgba(255, 255, 255, 0.05)
+        display: flex
+        align-items: center
+        justify-content: center
+        color: #8b8d96
+        
+        .material-symbols-rounded
+          font-size: 1.25rem
+          
+      .time-info
+        display: flex
+        flex-direction: column
+        
+        .time
+          font-size: 0.875rem
+          font-weight: 700
+          color: #ffffff
+          line-height: 1.2
+          
+        .date
+          font-size: 0.65rem
+          font-weight: 500
+          color: #8b8d96
+          text-transform: uppercase
+          letter-spacing: 0.05em
+
+    &.app-icon
+      width: 44px
+      height: 44px
+      border-radius: 12px
+      background: transparent
+      border: none
+      color: #8b8d96
+      cursor: pointer
+      position: relative
+      
+      .material-symbols-rounded
+        font-size: 1.5rem
+        transition: all 0.2s
+        
+      &:hover
+        background: rgba(255, 255, 255, 0.1)
+        color: #ffffff
+        transform: translateY(-2px)
+        
+      &.active
+        background: #ff6b00
+        color: #ffffff
+        box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3)
+        
+        &::after
+          content: ''
+          position: absolute
+          bottom: -6px
+          left: 50%
+          transform: translateX(-50%)
+          width: 4px
+          height: 4px
+          border-radius: 50%
+          background: #ff6b00
+
+      &.logout
+        &:hover
+          background: rgba(255, 59, 48, 0.15)
+          color: #ff3b30
+
+      .material-symbols-rounded
+        &.oscillate
+          animation: oscillate 2s ease-in-out infinite
+
+@keyframes oscillate
+  0%, 100%
+    transform: translateX(0)
+  25%
+    transform: translateX(-2px)
+  75%
+    transform: translateX(2px)

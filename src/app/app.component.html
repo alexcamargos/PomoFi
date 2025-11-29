@@ -1,15 +1,19 @@
 <div class="app-container">
-  <!-- Fixed Timer (Center) -->
-  <div class="timer-container">
-    <app-timer (timerStart)="youtubePlayer.playVideo()" (timerPause)="youtubePlayer.pauseVideo()"></app-timer>
+  <!-- Top Bar -->
+  <app-top-bar [isPlayerActive]="isPlayerPlaying" (togglePlayer)="togglePlayerVisibility()"></app-top-bar>
+
+  <!-- Timer Component -->
+  <div class="timer-container" cdkDrag [style.display]="isTimerVisible ? 'block' : 'none'">
+    <app-timer [isMuted]="isMuted" (timerStart)="onTimerStart()" (timerPause)="onTimerPause()"></app-timer>
   </div>
 
-  <!-- Draggable YouTube Widget -->
-  <div class="youtube-container">
-    <app-youtube-player #youtubePlayer cdkDrag cdkDragBoundary=".app-container"
-      [cdkDragDisabled]="youtubePlayer.isMaximized"></app-youtube-player>
+  <!-- YouTube Player Component -->
+  <div class="youtube-container" cdkDrag [style.display]="isPlayerVisible ? 'block' : 'none'">
+    <app-youtube-player #youtubePlayer [isMuted]="isMuted"
+      (playbackStateChange)="onPlayerStateChange($event)"></app-youtube-player>
   </div>
 
-  <!-- Footer / Dock (Optional, currently just footer info) -->
-  <app-footer></app-footer>
+  <!-- Dock -->
+  <app-dock [isTimerActive]="isTimerVisible" [isTimerRunning]="isTimerRunning" [isMuted]="isMuted"
+    (toggleTimer)="toggleTimerVisibility()" (toggleMute)="toggleMute()"></app-dock>
 </div>

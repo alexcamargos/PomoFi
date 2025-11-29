@@ -9,20 +9,31 @@ import { HeaderComponent } from './header/header.component';
 import { TimerComponent } from './timer/timer.component';
 import { YoutubePlayerComponent } from './youtube-player/youtube-player.component';
 import { FooterComponent } from './footer/footer.component';
+import { DockComponent } from './dock/dock.component';
+import { TopBarComponent } from './top-bar/top-bar.component';
 
 @NgModule({
   declarations: [
     HeaderComponent,
+    FooterComponent,
+    DockComponent,
+  ],
+  imports: [
+    CommonModule,
+    YouTubePlayerModule,
+    MatIconModule,
+    DragDropModule,
     TimerComponent,
     YoutubePlayerComponent,
-    FooterComponent,
+    TopBarComponent
   ],
-  imports: [CommonModule, YouTubePlayerModule, MatIconModule, DragDropModule],
   exports: [
     HeaderComponent,
     TimerComponent,
     YoutubePlayerComponent,
     FooterComponent,
+    DockComponent,
+    TopBarComponent,
   ],
 })
 export class ComponentsModule { }

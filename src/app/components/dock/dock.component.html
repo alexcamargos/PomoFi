@@ -1,0 +1,37 @@
+<div class="dock-container glass-panel">
+    <!-- Date/Time Widget -->
+    <div class="dock-item time-widget">
+        <div class="time-icon">
+            <span class="material-symbols-rounded">schedule</span>
+        </div>
+        <div class="time-info">
+            <div class="time">{{ currentTime }}</div>
+            <div class="date">{{ currentDate }}</div>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- App Icons -->
+    <button class="dock-item app-icon" [class.active]="isTimerActive" (click)="onTimerClick()" title="Focus Timer">
+        <span class="material-symbols-rounded" [class.oscillate]="isTimerRunning">timer</span>
+    </button>
+
+    <button class="dock-item app-icon" title="Tasks">
+        <span class="material-symbols-rounded">check_circle</span>
+    </button>
+
+    <button class="dock-item app-icon" (click)="onMuteClick()" title="Sounds">
+        <span class="material-symbols-rounded">{{ isMuted ? 'volume_off' : 'volume_up' }}</span>
+    </button>
+
+    <button class="dock-item app-icon" title="Gallery">
+        <span class="material-symbols-rounded">image</span>
+    </button>
+
+    <div class="separator"></div>
+
+    <button class="dock-item app-icon logout" title="Logout">
+        <span class="material-symbols-rounded">logout</span>
+    </button>
+</div>
